@@ -9,6 +9,7 @@ package org.sbtidea
 import java.io.File
 import sbt.Logger
 import xml.Node
+import java.nio.charset.UnmappableCharacterException
 
 trait SaveableXml {
   val log: Logger
@@ -19,7 +20,17 @@ trait SaveableXml {
     val file = new File(path)
     file.getParentFile.mkdirs()
 
-    OutputUtil.saveFile(file, content)
-    log.info("Created " + path)
+    try {
+      OutputUtil.saveFile(file, content)
+      log.info("Created " + path)
+    } catch {
+      case e: UnmappableCharacterException => {
+        val prettyPrint = new scala.xml.PrettyPrinter(150, 2)
+        log.error("Unable to encode file: " + file)
+        val text: String = prettyPrint.format(content)
+        log.error("=> content pretty printed=" + text)
+        log.error("=> List[Char]=" + text.toList)
+      }
+    }
   }
 }

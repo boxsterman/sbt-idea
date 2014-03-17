@@ -19,7 +19,7 @@ object OutputUtil {
   def saveFile(file: File, node: xml.Node) {
     val prettyPrint = new scala.xml.PrettyPrinter(150, 2)
     val fos = new FileOutputStream(file)
-    val w = Channels.newWriter(fos.getChannel(), XML.encoding)
+    val w = Channels.newWriter(fos.getChannel(), "UTF-8")
 
     ultimately(w.close())(
       w.write(prettyPrint.format(node))
